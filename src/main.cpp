@@ -21,7 +21,34 @@
 #include "thread.h"
 #include "uci.h"
 
+#include "tune.h"
+
 using namespace Stockfish;
+
+void post_tune_update() {
+  PieceValue[MG][ROOK + PIECE_TYPE_NB] = PieceValue[MG][ROOK] = RookValueMg;
+  PieceValue[MG][ADVISOR + PIECE_TYPE_NB] = PieceValue[MG][ADVISOR] = AdvisorValueMg;
+  PieceValue[MG][CANNON + PIECE_TYPE_NB] = PieceValue[MG][CANNON] = CannonValueMg;
+  PieceValue[MG][PAWN + PIECE_TYPE_NB] = PieceValue[MG][PAWN] = PawnValueMg;
+  PieceValue[MG][KNIGHT + PIECE_TYPE_NB] = PieceValue[MG][KNIGHT] = KnightValueMg;
+  PieceValue[MG][BISHOP + PIECE_TYPE_NB] = PieceValue[MG][BISHOP] = BishopValueMg;
+
+  PieceValue[EG][ROOK + PIECE_TYPE_NB] = PieceValue[EG][ROOK] = RookValueEg;
+  PieceValue[EG][ADVISOR + PIECE_TYPE_NB] = PieceValue[EG][ADVISOR] = AdvisorValueEg;
+  PieceValue[EG][CANNON + PIECE_TYPE_NB] = PieceValue[EG][CANNON] = CannonValueEg;
+  PieceValue[EG][PAWN + PIECE_TYPE_NB] = PieceValue[EG][PAWN] = PawnValueEg;
+  PieceValue[EG][KNIGHT + PIECE_TYPE_NB] = PieceValue[EG][KNIGHT] = KnightValueEg;
+  PieceValue[EG][BISHOP + PIECE_TYPE_NB] = PieceValue[EG][BISHOP] = BishopValueEg;
+}
+
+TUNE(SetDefaultRange,
+     RookValueMg, RookValueEg,
+     AdvisorValueMg, AdvisorValueEg,
+     CannonValueMg, CannonValueEg,
+     PawnValueMg, PawnValueEg,
+     KnightValueMg, KnightValueEg,
+     BishopValueMg, BishopValueEg,
+     post_tune_update);
 
 int main(int argc, char* argv[]) {
 
