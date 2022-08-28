@@ -34,6 +34,23 @@
 #include "tt.h"
 #include "uci.h"
 
+#include "tune.h"
+
+static int futility_a = 168;
+static int futility_b = 256;
+static int futility_c = 122;
+static int futility_d = 138;
+static int futility_e = 60;
+
+using namespace Stockfish;
+TUNE(
+SetRange(100, 300), futility_a, 
+SetRange(128, 512), futility_b,
+SetRange(80, 160), futility_c,
+SetRange(80, 200), futility_d,
+SetRange(40, 80), futility_e
+);
+
 namespace Stockfish {
 
 namespace Search {
@@ -52,7 +69,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(futility_a * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -655,7 +672,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 256 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / futility_b >= beta
         &&  eval >= beta
         &&  eval < 26305) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
@@ -895,7 +912,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~9 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 11
-                  && ss->staticEval + 122 + 138 * lmrDepth + history / 60 <= alpha)
+                  && ss->staticEval + futility_c + futility_d * lmrDepth + history / futility_e <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~3 Elo)
