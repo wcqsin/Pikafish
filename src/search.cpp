@@ -38,6 +38,48 @@
 
 using namespace Stockfish;
 
+static int FM0 = 108;
+static int FM1 = 213;
+static int FM2 = 26305;
+static int R0 = 1463;
+static int R1 = 1010;
+static int R2 = 2081;
+static int SB0 = 8;
+static int SB1 = 240;
+static int SB2 = 276;
+static int SB3 = 1907;
+static int CA0 = 174;
+static int RA0 = 348;
+static int RA1 = 258;
+static int NM0 = 14695;
+static int NM1 = 15;
+static int NM2 = 15;
+static int NM3 = 201;
+static int NM4 = 24;
+static int NM5 = 147;
+static int NM6 = 650;
+static int SEE0 = 203;
+static int SSE1 = 0;
+static int SSE2 = 25;
+static int SSE3 = 20;
+static int FP0 = 124;
+static int FP1 = 140;
+static int FP2 = 62;
+
+TUNE(
+SetDefaultRange,
+FM0, FM1, FM2, R0, R1, R2, SB1, SB2, SB3,
+CA0, RA0, RA1, NM0, NM1, NM2, NM3, NM4, NM5, NM6,
+SEE0, SSE2, SSE3, FP0, FP1, FP2,
+SetRange(-600, 600), SSE1,
+SetRange(6, 10), SB0,
+SetRange(10, 20), NM1,
+SetRange(10, 20), NM2,
+SetRange(16, 32), NM4,
+Search::init
+);
+
+
 namespace Stockfish {
 
 namespace Search {
@@ -55,7 +97,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(108 * (d - improving));
+    return Value(FM0 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -63,7 +105,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn, Value delta, Value rootDelta) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + 1463 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > 1010);
+    return (r + R0 - int(delta) * 1024 / int(rootDelta)) / 1024 + (!i && r > R1);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -73,7 +115,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return std::min((8 * d + 240) * d - 276 , 1907);
+    return std::min((SB0 * d + SB1) * d - SB2 , SB3);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
@@ -131,7 +173,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int((20.81 + std::log(Threads.size()) / 2) * std::log(i));
+      Reductions[i] = int(((R2 * 0.01) + std::log(Threads.size()) / 2) * std::log(i));
 }
 
 
@@ -272,7 +314,7 @@ void Thread::search() {
 
   multiPV = std::min(multiPV, rootMoves.size());
 
-  complexityAverage.set(174, 1);
+  complexityAverage.set(CA0, 1);
 
   int searchAgainCounter = 0;
 
@@ -647,7 +689,7 @@ namespace {
     // return a fail low.
     if (   !PvNode
         && depth <= 7
-        && eval < alpha - 348 - 258 * depth * depth)
+        && eval < alpha - RA0 - RA1 * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)
@@ -658,18 +700,18 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 8
-        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 213 >= beta
+        &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / FM1 >= beta
         &&  eval >= beta
-        &&  eval < 26305) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
+        &&  eval < FM2) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 
     // Step 8. Null move search with verification search (~22 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 14695
+        && (ss-1)->statScore < NM0
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 15 * depth - improvement / 15 + 201 + complexity / 24
+        &&  ss->staticEval >= beta - NM1 * depth - improvement / NM2 + NM3 + complexity / NM4
         && !excludedMove
         &&  pos.not_only_pawn(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -677,7 +719,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth, eval and complexity of position
-        Depth R = std::min(int(eval - beta) / 147, 5) + depth / 3 + 4 - (complexity > 650);
+        Depth R = std::min(int(eval - beta) / NM5, 5) + depth / 3 + 4 - (complexity > NM6);
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
@@ -879,7 +921,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               // SEE based pruning (~9 Elo)
-              if (!pos.see_ge(move, Value(-203) * depth))
+              if (!pos.see_ge(move, Value(-SEE0) * depth + Value(SSE1)))
                   continue;
           }
           else
@@ -898,11 +940,11 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~9 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 11
-                  && ss->staticEval + 124 + 140 * lmrDepth + history / 62 <= alpha)
+                  && ss->staticEval + FP0 + FP1 * lmrDepth + history / FP2 <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~3 Elo)
-              if (!pos.see_ge(move, Value(-25 * lmrDepth * lmrDepth - 20 * lmrDepth)))
+              if (!pos.see_ge(move, Value(-SSE2 * lmrDepth * lmrDepth - SSE3 * lmrDepth)))
                   continue;
           }
       }
