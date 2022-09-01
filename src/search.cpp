@@ -37,6 +37,23 @@
 #include "tune.h"
 
 using namespace Stockfish;
+static int E0 = 69;
+static int E1 = 12;
+static int E2 = 6;
+static int E3 = 781;
+static int R0 = 10;
+static int R1 = 1630;
+static int R2 = 730;
+static int R3 = 1560;
+static int R4 = 2200;
+static int R5 = 1700;
+static int C0 = 277;
+static int C1 = 1819;
+static int I0 = 430;
+
+TUNE(
+    E0, E1, E2, E3, R0, R1, R2, R3, R4, R5, C0, C1, I0
+);
 
 
 namespace Stockfish {
@@ -406,16 +423,16 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (69 + 12 * (mainThread->bestPreviousAverageScore - bestValue)
-                                    +  6 * (mainThread->iterValue[iterIdx] - bestValue)) / 781.4;
+          double fallingEval = (E0 + E1 * (mainThread->bestPreviousAverageScore - bestValue)
+                                    + E2 * (mainThread->iterValue[iterIdx] - bestValue)) / double(E3);
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 10 < completedDepth ? 1.63 : 0.73;
-          double reduction = (1.56 + mainThread->previousTimeReduction) / (2.20 * timeReduction);
-          double bestMoveInstability = 1 + 1.7 * totBestMoveChanges / Threads.size();
+          timeReduction = lastBestMoveDepth + R0 < completedDepth ? (R1/1000.0) : (R2/1000.0);
+          double reduction = ((R3/1000.0) + mainThread->previousTimeReduction) / ((R4/1000.0) * timeReduction);
+          double bestMoveInstability = 1 + (R5/1000.0) * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
-          double complexPosition = std::min(1.0 + (complexity - 277) / 1819.1, 1.5);
+          double complexPosition = std::min(1.0 + (complexity - C0) / double(C1), 1.5);
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition;
 
@@ -436,7 +453,7 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > totalTime * 0.43)
+                   && Time.elapsed() > totalTime * (I0/1000.0))
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;
