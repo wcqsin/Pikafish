@@ -21,7 +21,19 @@
 #include "thread.h"
 #include "uci.h"
 
+#include "tune.h"
+
 using namespace Stockfish;
+
+TUNE(
+PieceValue[MG][ROOK], PieceValue[EG][ROOK], 
+PieceValue[MG][ADVISOR], PieceValue[EG][ADVISOR],
+PieceValue[MG][CANNON], PieceValue[EG][CANNON],
+PieceValue[MG][PAWN], PieceValue[EG][PAWN],
+PieceValue[MG][KNIGHT], PieceValue[EG][KNIGHT],
+PieceValue[MG][BISHOP], PieceValue[EG][BISHOP]
+);
+
 
 int main(int argc, char* argv[]) {
 

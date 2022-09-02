@@ -37,6 +37,20 @@
 #include "tune.h"
 
 using namespace Stockfish;
+static int Opt0 = 39;
+static int Opt1 = 8;
+static int Opt2 = 17;
+static int Opt3 = 144;
+static int Opt4 = 13966;
+static int Opt5 = 183;
+
+TUNE(
+SetRange(10, 60), Opt0,
+SetRange(-30, 30), Opt1,
+SetRange(-50, 50), Opt2,
+SetRange(100, 200), Opt3,
+SetDefaultRange, Opt4, Opt5
+);
 
 
 namespace Stockfish {
@@ -276,7 +290,7 @@ void Thread::search() {
 
   complexityAverage.set(168, 1);
 
-  optimism[ us] = Value(39);
+  optimism[ us] = Value(Opt0);
   optimism[~us] = -optimism[us];
 
   int searchAgainCounter = 0;
@@ -316,7 +330,7 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust optimism based on root move's previousScore
-              int opt = sigmoid(prev, 8, 17, 144, 13966, 183);
+              int opt = sigmoid(prev, Opt1, Opt2, Opt3, Opt4, Opt5);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }

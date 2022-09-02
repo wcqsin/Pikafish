@@ -283,7 +283,7 @@ enum Piece {
   PIECE_NB
 };
 
-constexpr Value PieceValue[PHASE_NB][PIECE_NB] = {
+inline Value PieceValue[PHASE_NB][PIECE_NB] = {
   { VALUE_ZERO, RookValueMg, AdvisorValueMg, CannonValueMg, PawnValueMg, KnightValueMg, BishopValueMg, VALUE_ZERO,
     VALUE_ZERO, RookValueMg, AdvisorValueMg, CannonValueMg, PawnValueMg, KnightValueMg, BishopValueMg, VALUE_ZERO },
   { VALUE_ZERO, RookValueEg, AdvisorValueEg, CannonValueEg, PawnValueEg, KnightValueEg, BishopValueEg, VALUE_ZERO,
