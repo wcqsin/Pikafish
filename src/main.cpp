@@ -25,13 +25,25 @@
 
 using namespace Stockfish;
 
+void updatePieveValue() {
+  PieceValue[MG][ROOK] = RookValueMg;
+  PieceValue[EG][ROOK] = RookValueEg;
+  PieceValue[MG][BISHOP] = BishopValueMg;
+  PieceValue[EG][BISHOP] = BishopValueEg;
+  PieceValue[MG][KNIGHT] = KnightValueMg;
+  PieceValue[EG][KNIGHT] = KnightValueEg;
+  PieceValue[MG][ADVISOR] = AdvisorValueMg;
+  PieceValue[EG][ADVISOR] = AdvisorValueEg;
+  PieceValue[MG][CANNON] = CannonValueMg;
+  PieceValue[EG][CANNON] = CannonValueEg;
+  PieceValue[MG][PAWN] = PawnValueMg;
+  PieceValue[EG][PAWN] = PawnValueEg;
+}
+
 TUNE(
-PieceValue[MG][ROOK], PieceValue[EG][ROOK], 
-PieceValue[MG][ADVISOR], PieceValue[EG][ADVISOR],
-PieceValue[MG][CANNON], PieceValue[EG][CANNON],
-PieceValue[MG][PAWN], PieceValue[EG][PAWN],
-PieceValue[MG][KNIGHT], PieceValue[EG][KNIGHT],
-PieceValue[MG][BISHOP], PieceValue[EG][BISHOP]
+RookValueMg, AdvisorValueMg, CannonValueMg, PawnValueMg, KnightValueMg, BishopValueMg,
+RookValueEg, AdvisorValueEg, CannonValueEg, PawnValueEg, KnightValueEg, BishopValueEg,
+updatePieveValue
 );
 
 
