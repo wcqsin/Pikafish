@@ -156,7 +156,7 @@ namespace Stockfish::Eval::NNUE {
 
     ASSERT_ALIGNED(transformedFeatures, alignment);
 
-    const int bucket = (pos.count<ALL_PIECES>() - 1) / 4;
+    const int bucket = pos.side_to_move() * LayerStacks / 2 + (pos.count<ALL_PIECES>() - 1) / 4;
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
     const auto positional = network[bucket]->propagate(transformedFeatures);
 
@@ -194,7 +194,7 @@ namespace Stockfish::Eval::NNUE {
     ASSERT_ALIGNED(transformedFeatures, alignment);
 
     NnueEvalTrace t{};
-    t.correctBucket = (pos.count<ALL_PIECES>() - 1) / 4;
+    t.correctBucket = pos.side_to_move() * LayerStacks / 2 + (pos.count<ALL_PIECES>() - 1) / 4;
     for (IndexType bucket = 0; bucket < LayerStacks; ++bucket) {
       const auto materialist = featureTransformer->transform(pos, transformedFeatures, bucket);
       const auto positional = network[bucket]->propagate(transformedFeatures);
@@ -296,16 +296,14 @@ namespace Stockfish::Eval::NNUE {
           auto st = pos.state();
 
           pos.remove_piece(sq);
-          st->accumulator.computed[WHITE] = false;
-          st->accumulator.computed[BLACK] = false;
+          st->accumulator.computed = false;
 
           Value eval = evaluate(pos);
           eval = pos.side_to_move() == WHITE ? eval : -eval;
           v = base - eval;
 
           pos.put_piece(pc, sq);
-          st->accumulator.computed[WHITE] = false;
-          st->accumulator.computed[BLACK] = false;
+          st->accumulator.computed = false;
         }
 
         writeSquare(f, r, pc, v);

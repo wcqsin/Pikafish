@@ -25,7 +25,7 @@
 
 #include "nnue_common.h"
 
-#include "features/half_ka_v2_xq.h"
+#include "features/kp_hm.h"
 
 #include "layers/affine_transform.h"
 #include "layers/clipped_relu.h"
@@ -34,19 +34,19 @@
 namespace Stockfish::Eval::NNUE {
 
 // Input features used in evaluation function
-using FeatureSet = Features::HalfKAv2_xq;
+using FeatureSet = Features::KP_hm;
 
 // Number of input feature dimensions after conversion
 constexpr IndexType TransformedFeatureDimensions = 1024;
-constexpr IndexType PSQTBuckets = 8;
-constexpr IndexType LayerStacks = 8;
+constexpr IndexType PSQTBuckets = 16;
+constexpr IndexType LayerStacks = 16;
 
 struct Network
 {
   static constexpr int FC_0_OUTPUTS = 15;
   static constexpr int FC_1_OUTPUTS = 32;
 
-  Layers::AffineTransform<TransformedFeatureDimensions, FC_0_OUTPUTS + 1> fc_0;
+  Layers::AffineTransform<TransformedFeatureDimensions / 2, FC_0_OUTPUTS + 1> fc_0;
   Layers::SqrClippedReLU<FC_0_OUTPUTS + 1> ac_sqr_0;
   Layers::ClippedReLU<FC_0_OUTPUTS + 1> ac_0;
   Layers::AffineTransform<FC_0_OUTPUTS * 2, FC_1_OUTPUTS> fc_1;
