@@ -16,6 +16,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "zip.h"
+
 #ifdef _WIN32
 #if _WIN32_WINNT < 0x0601
 #undef  _WIN32_WINNT
@@ -679,5 +681,27 @@ void init([[maybe_unused]] int argc, char* argv[]) {
 
 
 } // namespace CommandLine
+
+std::stringstream read_zipped_nnue(const std::string& fpath, const std::string& evalFile) {
+    void* buf = NULL;
+    size_t bufsize;
+
+    struct zip_t *zip = zip_open(fpath.c_str(), 0, 'r');
+    {
+        zip_entry_open(zip, evalFile.c_str());
+        {
+            zip_entry_read(zip, &buf, &bufsize);
+        }
+        zip_entry_close(zip);
+    }
+    zip_close(zip);
+
+    std::stringstream ss;
+    if (buf)
+        ss.write((const char*)buf, bufsize);
+    free(buf);
+
+    return ss;
+}
 
 } // namespace Stockfish
