@@ -282,7 +282,6 @@ namespace Stockfish::Eval::NNUE {
     // We estimate the value of each piece by doing a differential evaluation from
     // the current base eval, simulating the removal of the piece from its square.
     Value base = evaluate(pos);
-    base = pos.side_to_move() == WHITE ? base : -base;
 
     for (File f = FILE_A; f <= FILE_I; ++f)
       for (Rank r = RANK_0; r <= RANK_9; ++r)
@@ -299,7 +298,6 @@ namespace Stockfish::Eval::NNUE {
           st->accumulator.computed = false;
 
           Value eval = evaluate(pos);
-          eval = pos.side_to_move() == WHITE ? eval : -eval;
           v = base - eval;
 
           pos.put_piece(pc, sq);
@@ -312,7 +310,8 @@ namespace Stockfish::Eval::NNUE {
     ss << " NNUE derived piece values:\n";
     for (int row = 0; row < 3*RANK_NB+1; ++row)
         ss << board[row] << '\n';
-    ss << '\n';
+    ss << "KingBucket: " << (FeatureSet::king_bucket(pos) & 63)
+       << (FeatureSet::king_bucket(pos) >> 6 ? " (Mirrored)" : "") << "\n\n";
 
     auto t = trace_evaluate(pos);
 
@@ -332,7 +331,7 @@ namespace Stockfish::Eval::NNUE {
       format_cp_aligned_dot(t.positional[bucket], buffer[1]);
       format_cp_aligned_dot(t.psqt[bucket] + t.positional[bucket], buffer[2]);
 
-      ss <<  "|  " << bucket    << "        "
+      ss <<  "|  " << bucket    << (bucket < 10 ? "        " : "       ")
          << " |  " << buffer[0] << "  "
          << " |  " << buffer[1] << "  "
          << " |  " << buffer[2] << "  "
