@@ -38,15 +38,15 @@ using FeatureSet = Features::KP_hm;
 
 // Number of input feature dimensions after conversion
 constexpr IndexType TransformedFeatureDimensions = 1024;
-constexpr IndexType PSQTBuckets = 16;
-constexpr IndexType LayerStacks = 16;
+constexpr IndexType PSQTBuckets = 8;
+constexpr IndexType LayerStacks = 8;
 
 struct Network
 {
   static constexpr int FC_0_OUTPUTS = 15;
   static constexpr int FC_1_OUTPUTS = 32;
 
-  Layers::AffineTransform<TransformedFeatureDimensions / 2, FC_0_OUTPUTS + 1> fc_0;
+  Layers::AffineTransform<TransformedFeatureDimensions, FC_0_OUTPUTS + 1> fc_0;
   Layers::SqrClippedReLU<FC_0_OUTPUTS + 1> ac_sqr_0;
   Layers::ClippedReLU<FC_0_OUTPUTS + 1> ac_0;
   Layers::AffineTransform<FC_0_OUTPUTS * 2, FC_1_OUTPUTS> fc_1;

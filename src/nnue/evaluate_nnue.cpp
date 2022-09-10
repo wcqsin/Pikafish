@@ -156,7 +156,7 @@ namespace Stockfish::Eval::NNUE {
 
     ASSERT_ALIGNED(transformedFeatures, alignment);
 
-    const int bucket = pos.side_to_move() * LayerStacks / 2 + (pos.count<ALL_PIECES>() - 1) / 4;
+    const int bucket = (pos.count<ALL_PIECES>() - 1) / 4;
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
     const auto positional = network[bucket]->propagate(transformedFeatures);
 
@@ -194,7 +194,7 @@ namespace Stockfish::Eval::NNUE {
     ASSERT_ALIGNED(transformedFeatures, alignment);
 
     NnueEvalTrace t{};
-    t.correctBucket = pos.side_to_move() * LayerStacks / 2 + (pos.count<ALL_PIECES>() - 1) / 4;
+    t.correctBucket = (pos.count<ALL_PIECES>() - 1) / 4;
     for (IndexType bucket = 0; bucket < LayerStacks; ++bucket) {
       const auto materialist = featureTransformer->transform(pos, transformedFeatures, bucket);
       const auto positional = network[bucket]->propagate(transformedFeatures);
@@ -282,6 +282,7 @@ namespace Stockfish::Eval::NNUE {
     // We estimate the value of each piece by doing a differential evaluation from
     // the current base eval, simulating the removal of the piece from its square.
     Value base = evaluate(pos);
+    base = pos.side_to_move() == WHITE ? base : -base;
 
     for (File f = FILE_A; f <= FILE_I; ++f)
       for (Rank r = RANK_0; r <= RANK_9; ++r)
@@ -295,13 +296,16 @@ namespace Stockfish::Eval::NNUE {
           auto st = pos.state();
 
           pos.remove_piece(sq);
-          st->accumulator.computed = false;
+          st->accumulator.computed[WHITE] = false;
+          st->accumulator.computed[BLACK] = false;
 
           Value eval = evaluate(pos);
+          eval = pos.side_to_move() == WHITE ? eval : -eval;
           v = base - eval;
 
           pos.put_piece(pc, sq);
-          st->accumulator.computed = false;
+          st->accumulator.computed[WHITE] = false;
+          st->accumulator.computed[BLACK] = false;
         }
 
         writeSquare(f, r, pc, v);
@@ -310,8 +314,10 @@ namespace Stockfish::Eval::NNUE {
     ss << " NNUE derived piece values:\n";
     for (int row = 0; row < 3*RANK_NB+1; ++row)
         ss << board[row] << '\n';
-    ss << "KingBucket: " << (FeatureSet::king_bucket(pos) & 63)
-       << (FeatureSet::king_bucket(pos) >> 6 ? " (Mirrored)" : "") << "\n\n";
+    ss << "WhiteKingBucket: " << (FeatureSet::king_bucket(WHITE, pos) & 63)
+       << (FeatureSet::king_bucket(WHITE, pos) >> 6 ? " (Mirrored)" : "") << "\n"
+       << "BlackKingBucket: " << (FeatureSet::king_bucket(BLACK, pos) & 63)
+       << (FeatureSet::king_bucket(BLACK, pos) >> 6 ? " (Mirrored)" : "") << "\n\n";
 
     auto t = trace_evaluate(pos);
 
@@ -331,7 +337,7 @@ namespace Stockfish::Eval::NNUE {
       format_cp_aligned_dot(t.positional[bucket], buffer[1]);
       format_cp_aligned_dot(t.psqt[bucket] + t.positional[bucket], buffer[2]);
 
-      ss <<  "|  " << bucket    << (bucket < 10 ? "        " : "       ")
+      ss <<  "|  " << bucket    << "        "
          << " |  " << buffer[0] << "  "
          << " |  " << buffer[1] << "  "
          << " |  " << buffer[2] << "  "

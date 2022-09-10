@@ -54,14 +54,17 @@ namespace Stockfish::Eval::NNUE::Features {
       PS_NB        =  12 * SQUARE_NB
     };
 
-    static constexpr IndexType PieceSquareIndex[PIECE_NB] = {
-      // convention: W - us, B - them
-      PS_NONE, PS_W_ROOK, PS_W_ADVISOR, PS_W_CANNON, PS_W_PAWN, PS_W_KNIGHT, PS_W_BISHOP, PS_NONE,
-      PS_NONE, PS_B_ROOK, PS_B_ADVISOR, PS_B_CANNON, PS_B_PAWN, PS_B_KNIGHT, PS_B_BISHOP, PS_NONE
+    static constexpr IndexType PieceSquareIndex[COLOR_NB][PIECE_NB] = {
+        // convention: W - us, B - them
+        // viewed from other side, W and B are reversed
+        { PS_NONE, PS_W_ROOK, PS_W_ADVISOR, PS_W_CANNON, PS_W_PAWN, PS_W_KNIGHT, PS_W_BISHOP, PS_NONE,
+          PS_NONE, PS_B_ROOK, PS_B_ADVISOR, PS_B_CANNON, PS_B_PAWN, PS_B_KNIGHT, PS_B_BISHOP, PS_NONE },
+        { PS_NONE, PS_B_ROOK, PS_B_ADVISOR, PS_B_CANNON, PS_B_PAWN, PS_B_KNIGHT, PS_B_BISHOP, PS_NONE,
+          PS_NONE, PS_W_ROOK, PS_W_ADVISOR, PS_W_CANNON, PS_W_PAWN, PS_W_KNIGHT, PS_W_BISHOP, PS_NONE, }
     };
 
     // Index of a feature for a given king bucket and another piece on some square
-    static IndexType make_index(Square s, Piece pc, int bucket);
+    static IndexType make_index(Color perspective, Square s, Piece pc, int bucket);
 
    public:
     // Feature name
@@ -92,7 +95,7 @@ namespace Stockfish::Eval::NNUE::Features {
            0 ,    1 ,    2 ,    3 ,    4 ,    5 ,    6 ,    7 ,    8 , // white king on  0, no mirror
            9 ,   10 , M( 9),   11 ,   12 , M(11),   13 ,   14 , M(13), // white king on  9, mirror for black
         M( 2), M( 1), M( 0), M( 5), M( 4), M( 3), M( 8), M( 7), M( 6), // white king on 18, mirror for white
-          15 ,   16 ,   17 ,   18 ,   19 ,  20 ,    21 ,   22 ,   23 , // white king on 27, no mirror
+          15 ,   16 ,   17 ,   18 ,   19 ,   20,    21 ,   22 ,   23 , // white king on 27, no mirror
           24 ,   25 , M(24),   26 ,   27 , M(26),   28 ,   29 , M(28), // white king on 36, mirror for black
         M(17), M(16), M(15), M(20), M(19), M(18), M(23), M(22), M(21), // white king on 45, mirror for white
           30 ,   31 ,   32 ,   33 ,   34 ,   35 ,   36 ,   37 ,   38 , // white king on 54, no mirror
@@ -115,22 +118,49 @@ namespace Stockfish::Eval::NNUE::Features {
         89, 88, 87, 86, 85, 84, 83, 82, 81,
     };
 
+    // Orient a square according to perspective (rotates by 180 for black)
+    static constexpr int Orient[COLOR_NB][SQUARE_NB] = {
+        {    0,  1,  2,  3,  4,  5,  6,  7,  8,
+             9, 10, 11, 12, 13, 14, 15, 16, 17,
+            18, 19, 20, 21, 22, 23, 24, 25, 26,
+            27, 28, 29, 30, 31, 32, 33, 34, 35,
+            36, 37, 38, 39, 40, 41, 42, 43, 44,
+            45, 46, 47, 48, 49, 50, 51, 52, 53,
+            54, 55, 56, 57, 58, 59, 60, 61, 62,
+            63, 64, 65, 66, 67, 68, 69, 70, 71,
+            72, 73, 74, 75, 76, 77, 78, 79, 80,
+            81, 82, 83, 84, 85, 86, 87, 88, 89,  },
+
+        {   81, 82, 83, 84, 85, 86, 87, 88, 89,
+            72, 73, 74, 75, 76, 77, 78, 79, 80,
+            63, 64, 65, 66, 67, 68, 69, 70, 71,
+            54, 55, 56, 57, 58, 59, 60, 61, 62,
+            45, 46, 47, 48, 49, 50, 51, 52, 53,
+            36, 37, 38, 39, 40, 41, 42, 43, 44,
+            27, 28, 29, 30, 31, 32, 33, 34, 35,
+            18, 19, 20, 21, 22, 23, 24, 25, 26,
+             9, 10, 11, 12, 13, 14, 15, 16, 17,
+             0,  1,  2,  3,  4,  5,  6,  7,  8,  }
+    };
+
     // Maximum number of simultaneously active features.
     static constexpr IndexType MaxActiveDimensions = 30;
     using IndexList = ValueList<IndexType, MaxActiveDimensions>;
 
     // Get the king bucket
-    static int king_bucket(const Position& pos);
+    static int king_bucket(Color perspective, const Position& pos);
 
     // Get a list of indices for active features
     static void append_active_indices(
       const Position& pos,
+      Color perspective,
       IndexList& active);
 
     // Get a list of indices for recently changed features
     static void append_changed_indices(
       int bucket,
       const DirtyPiece& dp,
+      Color perspective,
       IndexList& removed,
       IndexList& added
     );

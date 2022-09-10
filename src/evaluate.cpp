@@ -151,8 +151,8 @@ std::string Eval::trace(Position& pos) {
   ss << std::showpoint << std::showpos << std::fixed << std::setprecision(2) << std::setw(15);
 
   v = NNUE::evaluate(pos);
-  ss << "NNUE evaluation        " << to_cp(v)
-     << (pos.side_to_move() == WHITE ? " (white side)" : " (black side)") << "\n";
+  v = pos.side_to_move() == WHITE ? v : -v;
+  ss << "NNUE evaluation        " << to_cp(v) << " (white side)\n";
 
   v = evaluate(pos);
   v = pos.side_to_move() == WHITE ? v : -v;

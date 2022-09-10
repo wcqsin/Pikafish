@@ -25,26 +25,30 @@
 namespace Stockfish::Eval::NNUE::Features {
 
   // Index of a feature for a given king bucket and another piece on some square
-  inline IndexType KP_hm::make_index(Square s, Piece pc, int bucket) {
-    return IndexType(PS_NB * (bucket & 63) + PieceSquareIndex[pc] + (bucket >> 6 ? Mirror[s] : s));
+  inline IndexType KP_hm::make_index(Color perspective, Square s, Piece pc, int bucket) {
+    s = Square(Orient[perspective][s]);
+    return IndexType(PS_NB * (bucket & 63) + PieceSquareIndex[perspective][pc] + (bucket >> 6 ? Mirror[s] : s));
   }
 
   // Get the king bucket
-  int KP_hm::king_bucket(const Position& pos) {
-    return KingBuckets[KingMaps[pos.square<KING>(WHITE)] + KingMaps[pos.square<KING>(BLACK)]];
+  int KP_hm::king_bucket(Color perspective, const Position& pos) {
+    int uksq = Orient[perspective][pos.square<KING>(perspective)];
+    int oksq = Orient[perspective][pos.square<KING>(~perspective)];
+    return KingBuckets[KingMaps[uksq] + KingMaps[oksq]];
   }
 
   // Get a list of indices for active features
   void KP_hm::append_active_indices(
     const Position& pos,
+    Color perspective,
     IndexList& active
   ) {
-    int bucket = king_bucket(pos);
+    int bucket = king_bucket(perspective, pos);
     Bitboard bb = pos.pieces() & ~pos.pieces(KING);
     while (bb)
     {
       Square s = pop_lsb(bb);
-      active.push_back(make_index(s, pos.piece_on(s), bucket));
+      active.push_back(make_index(perspective, s, pos.piece_on(s), bucket));
     }
   }
 
@@ -53,14 +57,15 @@ namespace Stockfish::Eval::NNUE::Features {
   void KP_hm::append_changed_indices(
     int bucket,
     const DirtyPiece& dp,
+    Color perspective,
     IndexList& removed,
     IndexList& added
   ) {
     for (int i = 0; i < dp.dirty_num; ++i) {
       if (dp.from[i] != SQ_NONE)
-        removed.push_back(make_index(dp.from[i], dp.piece[i], bucket));
+        removed.push_back(make_index(perspective, dp.from[i], dp.piece[i], bucket));
       if (dp.to[i] != SQ_NONE)
-        added.push_back(make_index(dp.to[i], dp.piece[i], bucket));
+        added.push_back(make_index(perspective, dp.to[i], dp.piece[i], bucket));
     }
   }
 
