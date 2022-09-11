@@ -18,8 +18,8 @@
 
 // Definition of input features KP_hm of NNUE evaluation function
 
-#ifndef NNUE_FEATURES_HALF_KA_V2_XQ_H_INCLUDED
-#define NNUE_FEATURES_HALF_KA_V2_XQ_H_INCLUDED
+#ifndef NNUE_FEATURES_KP_HM_H_INCLUDED
+#define NNUE_FEATURES_KP_HM_H_INCLUDED
 
 #include "../nnue_common.h"
 
@@ -177,4 +177,4 @@ namespace Stockfish::Eval::NNUE::Features {
 
 }  // namespace Stockfish::Eval::NNUE::Features
 
-#endif // #ifndef NNUE_FEATURES_HALF_KA_V2_XQ_H_INCLUDED
+#endif // #ifndef NNUE_FEATURES_KP_HM_H_INCLUDED
