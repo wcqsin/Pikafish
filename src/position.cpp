@@ -622,8 +622,6 @@ bool Position::see_ge(Move m, Value threshold) const {
   if (attackers & pieces(~stm, KING))
       attackers |= attacks_bb<ROOK>(to, occupied & ~pieces(ROOK)) & pieces(stm, KING);
 
-  Bitboard nonCannons = attackers & ~pieces(CANNON);
-  Bitboard cannons = attackers & pieces(CANNON);
   Bitboard stmAttackers, bb;
   int res = 1;
 
@@ -656,9 +654,6 @@ bool Position::see_ge(Move m, Value threshold) const {
               break;
 
           occupied ^= least_significant_square_bb(bb);
-          nonCannons |= attacks_bb<ROOK>(to, occupied) & pieces(ROOK);
-          cannons = attacks_bb<CANNON>(to, occupied);
-          attackers = nonCannons | cannons;
       }
 
       else if ((bb = stmAttackers & pieces(ADVISOR)))
@@ -667,8 +662,6 @@ bool Position::see_ge(Move m, Value threshold) const {
               break;
 
           occupied ^= least_significant_square_bb(bb);
-          nonCannons |= attacks_bb<KNIGHT_TO>(to, occupied) & pieces(KNIGHT);
-          attackers = nonCannons | cannons;
       }
 
       else if ((bb = stmAttackers & pieces(BISHOP)))
@@ -693,8 +686,6 @@ bool Position::see_ge(Move m, Value threshold) const {
               break;
 
           occupied ^= least_significant_square_bb(bb);
-          cannons = attacks_bb<CANNON>(to, occupied);
-          attackers = nonCannons | cannons;
       }
 
       else if ((bb = stmAttackers & pieces(ROOK)))
@@ -703,9 +694,6 @@ bool Position::see_ge(Move m, Value threshold) const {
               break;
 
           occupied ^= least_significant_square_bb(bb);
-          nonCannons |= attacks_bb<ROOK>(to, occupied) & pieces(ROOK);
-          cannons = attacks_bb<CANNON>(to, occupied);
-          attackers = nonCannons | cannons;
       }
 
       else // KING
@@ -927,7 +915,7 @@ bool Position::is_repeated(Value& result, int ply) const {
         // Return a score if a position repeats once earlier.
         if (stp->key == st->key)
         {
-            if (perpetualThem || perpetualUs)
+            if (perpetualUs || perpetualThem)
             {
                 result = !perpetualUs ? mate_in(ply) : !perpetualThem ? mated_in(ply) : VALUE_DRAW;
                 return true;
@@ -938,17 +926,17 @@ bool Position::is_repeated(Value& result, int ply) const {
             memcpy((void *)&rollback, (const void *)this, offsetof(Position, filter));
 
             // Set up chase information
-            rollback.set_chase_info(std::min(i + 1, st->pliesFromNull));
+            rollback.set_chase_info(i);
 
             // Chasing detection
             stp = st->previous->previous;
             uint16_t chaseThem = st->chased & stp->chased;
             uint16_t chaseUs = st->previous->chased & stp->previous->chased;
 
-            for (i = 4; i <= st->pliesFromNull; i += 2)
+            for (int j = 4; j <= i; j += 2)
             {
-                // Chased pieces are empty when there is no previous move
-                if (i != st->pliesFromNull)
+                // Chase stops after i moves
+                if (j != i)
                     chaseThem &= stp->previous->previous->chased;
                 stp = stp->previous->previous;
 
@@ -959,7 +947,7 @@ bool Position::is_repeated(Value& result, int ply) const {
                     return true;
                 }
 
-                if (i + 1 <= st->pliesFromNull)
+                if (j + 1 <= i)
                     chaseUs &= stp->previous->chased;
             }
         }

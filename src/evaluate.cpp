@@ -123,7 +123,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   int nnueComplexity;
   Value v = NNUE::evaluate(pos, &nnueComplexity);
   // Blend nnue complexity with material complexity
-  nnueComplexity = (Com0 * nnueComplexity + Com1 * abs(v - pos.material())) / 256;
+  nnueComplexity = (104 * nnueComplexity + 131 * abs(v - pos.material_diff())) / 256;
   if (complexity) // Return hybrid NNUE complexity to caller
       *complexity = nnueComplexity;
 
@@ -165,6 +165,10 @@ std::string Eval::trace(Position& pos) {
   v = NNUE::evaluate(pos);
   v = pos.side_to_move() == WHITE ? v : -v;
   ss << "NNUE evaluation        " << to_cp(v) << " (white side)\n";
+
+  v = evaluate(pos);
+  v = pos.side_to_move() == WHITE ? v : -v;
+  ss << "Final evaluation       " << to_cp(v) << " (white side) [with scaled NNUE, optimism, ...]\n";
 
   return ss.str();
 }
