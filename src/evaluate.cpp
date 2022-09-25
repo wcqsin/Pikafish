@@ -123,7 +123,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   int nnueComplexity;
   Value v = NNUE::evaluate(pos, &nnueComplexity);
   // Blend nnue complexity with material complexity
-  nnueComplexity = (104 * nnueComplexity + 131 * abs(v - pos.material_diff())) / 256;
+  nnueComplexity = (Com0 * nnueComplexity + Com1 * abs(v - pos.material_diff())) / 256;
   if (complexity) // Return hybrid NNUE complexity to caller
       *complexity = nnueComplexity;
 
