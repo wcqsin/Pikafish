@@ -917,12 +917,7 @@ bool Position::is_repeated(Value& result, int ply) const {
         {
             if (perpetualUs || perpetualThem)
             {
-                // Only judge the opponent side at root ply
-                if (perpetualUs && !perpetualThem) {
-                    result = mated_in(ply);
-                    return ply == 1;
-                }
-                result = perpetualUs ? VALUE_DRAW : mate_in(ply);
+                result = !perpetualUs ? mate_in(ply) : !perpetualThem ? mated_in(ply) : VALUE_DRAW;
                 return true;
             }
 
@@ -948,12 +943,7 @@ bool Position::is_repeated(Value& result, int ply) const {
                 // Return a score if a position repeats once earlier.
                 if (stp->key == st->key)
                 {
-                    // Only judge the opponent side at root ply
-                    if (chaseUs && !chaseThem) {
-                        result = mated_in(ply);
-                        return ply == 1;
-                    }
-                    result = chaseThem ? (chaseUs ? VALUE_DRAW : mate_in(ply)) : VALUE_DRAW;
+                    result = (chaseThem || chaseUs) ? (!chaseUs ? mate_in(ply) : !chaseThem ? mated_in(ply) : VALUE_DRAW) : VALUE_DRAW;
                     return true;
                 }
 
