@@ -925,7 +925,7 @@ bool Position::is_repeated(Value& result, int ply) const {
         // Return a score if a position repeats once earlier.
         if (stp->key == st->key)
         {
-            if (perpetualUs || perpetualThem)
+            if (perpetualThem || perpetualUs)
             {
                 result = !perpetualUs ? mate_in(ply) : !perpetualThem ? mated_in(ply) : VALUE_DRAW;
                 return true;
