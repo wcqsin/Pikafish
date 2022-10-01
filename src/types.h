@@ -292,20 +292,13 @@ enum Value : int {
   VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - MAX_PLY,
   VALUE_MATED_IN_MAX_PLY = -VALUE_MATE_IN_MAX_PLY,
 
-  // RookValueMg    = 1350,  RookValueEg    = 1500,
-  // AdvisorValueMg = 300 ,  AdvisorValueEg = 180 ,
-  // CannonValueMg  = 620 ,  CannonValueEg  = 520 ,
-  // PawnValueMg    = 80  ,  PawnValueEg    = 160 ,
-  // KnightValueMg  = 520 ,  KnightValueEg  = 800 ,
-  // BishopValueMg  = 330 ,  BishopValueEg  = 210 ,
+  RookValueMg    = 1463,  RookValueEg    = 1455,
+  AdvisorValueMg = 293 ,  AdvisorValueEg = 172 ,
+  CannonValueMg  = 861 ,  CannonValueEg  = 586 ,
+  PawnValueMg    = 90  ,  PawnValueEg    = 151 ,
+  KnightValueMg  = 534 ,  KnightValueEg  = 679 ,
+  BishopValueMg  = 311 ,  BishopValueEg  = 220 ,
 };
-
-inline Value  RookValueMg    = Value(1350),  RookValueEg    = Value(1500);
-inline Value  AdvisorValueMg = Value(300 ),  AdvisorValueEg = Value(180 );
-inline Value  CannonValueMg  = Value(620 ),  CannonValueEg  = Value(520 );
-inline Value  PawnValueMg    = Value(80  ),  PawnValueEg    = Value(160 );
-inline Value  KnightValueMg  = Value(520 ),  KnightValueEg  = Value(800 );
-inline Value  BishopValueMg  = Value(330 ),  BishopValueEg  = Value(210 );
 
 enum PieceType {
   NO_PIECE_TYPE, ROOK, ADVISOR, CANNON, PAWN, KNIGHT, BISHOP, KING, KNIGHT_TO,

@@ -33,22 +33,7 @@
 #include "thread.h"
 #include "uci.h"
 
-#include "tune.h"
-
 using namespace std;
-using namespace Stockfish;
-
-static int Com0 = 104;
-static int Com1 = 131;
-static int Scale0 = 1064;
-static int Scale1 = 106;
-static int Scale2 = 5120;
-static int Scale3 = 269;
-static int Scale4 = 754;
-
-TUNE(
-Com0, Com1, Scale0, Scale1, Scale2, Scale3, Scale4
-);
 
 namespace Stockfish {
 
@@ -123,14 +108,14 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   int nnueComplexity;
   Value v = NNUE::evaluate(pos, &nnueComplexity);
   // Blend nnue complexity with material complexity
-  nnueComplexity = (Com0 * nnueComplexity + Com1 * abs(v - pos.material_diff())) / 256;
+  nnueComplexity = (90 * nnueComplexity + 121 * abs(v - pos.material_diff())) / 256;
   if (complexity) // Return hybrid NNUE complexity to caller
       *complexity = nnueComplexity;
 
-  int scale = Scale0 + Scale1 * pos.material_sum() / Scale2;
+  int scale = 1035 + 126 * pos.material_sum() / 4214;
   Value optimism = pos.this_thread()->optimism[pos.side_to_move()];
-  optimism = optimism * (Scale3 + nnueComplexity) / 256;
-  v = (v * scale + optimism * (scale - Scale4)) / 1024;
+  optimism = optimism * (281 + nnueComplexity) / 256;
+  v = (v * scale + optimism * (scale - 780)) / 1024;
 
   // Guarantee evaluation does not hit the mate range
   v = std::clamp(v, VALUE_MATED_IN_MAX_PLY + 1, VALUE_MATE_IN_MAX_PLY - 1);

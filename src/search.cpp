@@ -34,16 +34,6 @@
 #include "tt.h"
 #include "uci.h"
 
-#include "tune.h"
-
-using namespace Stockfish;
-static int Opt0 = 118;
-static int Opt1 = 169;
-
-TUNE(
-Opt0, Opt1
-);
-
 
 namespace Stockfish {
 
@@ -319,7 +309,7 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust optimism based on root move's previousScore
-              int opt = Opt0 * prev / (std::abs(prev) + Opt1);
+              int opt = 94 * prev / (std::abs(prev) + 177);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }
