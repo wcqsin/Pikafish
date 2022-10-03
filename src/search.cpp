@@ -34,7 +34,6 @@
 #include "tt.h"
 #include "uci.h"
 
-
 namespace Stockfish {
 
 namespace Search {

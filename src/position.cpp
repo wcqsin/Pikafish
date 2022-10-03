@@ -676,6 +676,8 @@ bool Position::see_ge(Move m, Value threshold) const {
               break;
 
           occupied ^= least_significant_square_bb(bb);
+          nonCannons |= attacks_bb<KNIGHT_TO>(to, occupied) & pieces(KNIGHT);
+          attackers = nonCannons | cannons;
       }
 
       else if ((bb = stmAttackers & pieces(BISHOP)))
