@@ -25,13 +25,20 @@
 
 using namespace Stockfish;
 
-void updatePieveValue() {
-  PieceValue[MG][CANNON] = CannonValueMg;
+template <int Phase, int PieceType>
+void updatePieceValue(Value v, int whiteAdvantage) {
+  PieceValue[Phase][PieceType] = v + whiteAdvantage;
+  PieceValue[Phase][PieceType + PIECE_TYPE_NB] = v - whiteAdvantage;
+}
+
+int CannonWhiteAdv = 0;
+void postUpdate() {
+  updatePieceValue<MG, CANNON>(CannonValueMg, CannonWhiteAdv);
 }
 
 TUNE(
-CannonValueMg,
-updatePieveValue
+CannonValueMg, SetRange(-200, 200), CannonWhiteAdv,
+postUpdate
 );
 
 
