@@ -25,8 +25,8 @@
 
 using namespace Stockfish;
 
-int WhiteAdv[PHASE_NB][PIECE_TYPE_NB] = { 
-	{0, 0, 0, 100, 0, 0, 0, 0},
+const int WhiteAdv[PHASE_NB][PIECE_TYPE_NB] = { 
+	{0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0},
 };
 
@@ -60,12 +60,12 @@ PawnValueMg, PawnValueEg,
 KnightValueMg, KnightValueEg,
 BishopValueMg, BishopValueEg,
 
-SetRange(-300, 300), WhiteAdv[MG][ROOK], WhiteAdv[EG][ROOK],
-SetRange(-100, 100), WhiteAdv[MG][ADVISOR], WhiteAdv[EG][ADVISOR],
-SetRange(-200, 200), WhiteAdv[MG][CANNON], WhiteAdv[EG][CANNON],
-SetRange(-50, 50), WhiteAdv[MG][PAWN], WhiteAdv[EG][PAWN],
-SetRange(-200, 200), WhiteAdv[MG][KNIGHT], WhiteAdv[EG][KNIGHT],
-SetRange(-100, 100), WhiteAdv[MG][BISHOP], WhiteAdv[EG][BISHOP],
+// SetRange(-300, 300), WhiteAdv[MG][ROOK], WhiteAdv[EG][ROOK],
+// SetRange(-100, 100), WhiteAdv[MG][ADVISOR], WhiteAdv[EG][ADVISOR],
+// SetRange(-200, 200), WhiteAdv[MG][CANNON], WhiteAdv[EG][CANNON],
+// SetRange(-50, 50), WhiteAdv[MG][PAWN], WhiteAdv[EG][PAWN],
+// SetRange(-200, 200), WhiteAdv[MG][KNIGHT], WhiteAdv[EG][KNIGHT],
+// SetRange(-100, 100), WhiteAdv[MG][BISHOP], WhiteAdv[EG][BISHOP],
 
 postUpdate
 );
