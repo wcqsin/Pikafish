@@ -292,20 +292,20 @@ enum Value : int {
   VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - MAX_PLY,
   VALUE_MATED_IN_MAX_PLY = -VALUE_MATE_IN_MAX_PLY,
 
-  //RookValueMg    = 1463,  RookValueEg    = 1455,
-  //AdvisorValueMg = 293 ,  AdvisorValueEg = 172 ,
-  //CannonValueMg  = 861 ,  CannonValueEg  = 586 ,
-  //PawnValueMg    = 90  ,  PawnValueEg    = 151 ,
-  //KnightValueMg  = 534 ,  KnightValueEg  = 679 ,
-  //BishopValueMg  = 311 ,  BishopValueEg  = 220 ,
+  RookValueMg    = 1462,  RookValueEg    = 1268,
+  AdvisorValueMg = 189 ,  AdvisorValueEg = 156 ,
+  CannonValueMg  = 515 ,  CannonValueEg  = 674 ,
+  PawnValueMg    = 72  ,  PawnValueEg    = 135 ,
+  KnightValueMg  = 554 ,  KnightValueEg  = 744 ,
+  BishopValueMg  = 202 ,  BishopValueEg  = 173 ,
 };
 
-inline Value  RookValueMg = Value(1463), RookValueEg = Value(1455);
-inline Value  AdvisorValueMg = Value(293), AdvisorValueEg = Value(172);
-inline Value  CannonValueMg = Value(861), CannonValueEg = Value(586);
-inline Value  PawnValueMg = Value(90), PawnValueEg = Value(151);
-inline Value  KnightValueMg = Value(534), KnightValueEg = Value(679);
-inline Value  BishopValueMg = Value(311), BishopValueEg = Value(220);
+//inline Value  RookValueMg = Value(1463), RookValueEg = Value(1455);
+//inline Value  AdvisorValueMg = Value(293), AdvisorValueEg = Value(172);
+//inline Value  CannonValueMg = Value(861), CannonValueEg = Value(586);
+//inline Value  PawnValueMg = Value(90), PawnValueEg = Value(151);
+//inline Value  KnightValueMg = Value(534), KnightValueEg = Value(679);
+//inline Value  BishopValueMg = Value(311), BishopValueEg = Value(220);
 
 enum PieceType {
   NO_PIECE_TYPE, ROOK, ADVISOR, CANNON, PAWN, KNIGHT, BISHOP, KING, KNIGHT_TO,
