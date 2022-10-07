@@ -21,54 +21,52 @@
 #include "thread.h"
 #include "uci.h"
 
-#include "tune.h"
+//#include "tune.h"
 
 using namespace Stockfish;
 
-const int WhiteAdv[PHASE_NB][PIECE_TYPE_NB] = { 
-	{0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0},
-};
+//const int WhiteAdv[PHASE_NB][PIECE_TYPE_NB] = { 
+//	{0, 0, 0, 0, 0, 0, 0, 0},
+//	{0, 0, 0, 0, 0, 0, 0, 0},
+//};
 
-template <int Phase, int PieceType>
-void updatePieceValue(Value v) {
-  int whiteAdvantage = WhiteAdv[Phase][PieceType];
-  PieceValue[Phase][PieceType] = v + whiteAdvantage;
-  PieceValue[Phase][PieceType + PIECE_TYPE_NB] = v - whiteAdvantage;
-}
+//template <int Phase, int PieceType>
+//void updatePieceValue(Value v) {
+//  int whiteAdvantage = WhiteAdv[Phase][PieceType];
+//  PieceValue[Phase][PieceType] = v + whiteAdvantage;
+//  PieceValue[Phase][PieceType + PIECE_TYPE_NB] = v - whiteAdvantage;
+//}
 
-void postUpdate() {
-  updatePieceValue<MG, ROOK>(RookValueMg);
-  updatePieceValue<MG, ADVISOR>(AdvisorValueMg);
-  updatePieceValue<MG, CANNON>(CannonValueMg);
-  updatePieceValue<MG, PAWN>(PawnValueMg);
-  updatePieceValue<MG, KNIGHT>(KnightValueMg);
-  updatePieceValue<MG, BISHOP>(BishopValueMg);
-  updatePieceValue<EG, ROOK>(RookValueEg);
-  updatePieceValue<EG, ADVISOR>(AdvisorValueEg);
-  updatePieceValue<EG, CANNON>(CannonValueEg);
-  updatePieceValue<EG, PAWN>(PawnValueEg);
-  updatePieceValue<EG, KNIGHT>(KnightValueEg);
-  updatePieceValue<EG, BISHOP>(BishopValueEg);
-}
+//void postUpdate() {
+//  updatePieceValue<MG, ROOK>(RookValueMg);
+//  updatePieceValue<MG, ADVISOR>(AdvisorValueMg);
+//  updatePieceValue<MG, CANNON>(CannonValueMg);
+//  updatePieceValue<MG, PAWN>(PawnValueMg);
+//  updatePieceValue<MG, KNIGHT>(KnightValueMg);
+//  updatePieceValue<MG, BISHOP>(BishopValueMg);
+//  updatePieceValue<EG, ROOK>(RookValueEg);
+//  updatePieceValue<EG, ADVISOR>(AdvisorValueEg);
+//  updatePieceValue<EG, CANNON>(CannonValueEg);
+//  updatePieceValue<EG, PAWN>(PawnValueEg);
+//  updatePieceValue<EG, KNIGHT>(KnightValueEg);
+//  updatePieceValue<EG, BISHOP>(BishopValueEg);
+//}
 
-TUNE(
-RookValueMg, RookValueEg,
-AdvisorValueMg, AdvisorValueEg,
-CannonValueMg, CannonValueEg,
-PawnValueMg, PawnValueEg,
-KnightValueMg, KnightValueEg,
-BishopValueMg, BishopValueEg,
-
+//TUNE(
+//RookValueMg, RookValueEg,
+//AdvisorValueMg, AdvisorValueEg,
+//CannonValueMg, CannonValueEg,
+//PawnValueMg, PawnValueEg,
+//KnightValueMg, KnightValueEg,
+//BishopValueMg, BishopValueEg,
 // SetRange(-300, 300), WhiteAdv[MG][ROOK], WhiteAdv[EG][ROOK],
 // SetRange(-100, 100), WhiteAdv[MG][ADVISOR], WhiteAdv[EG][ADVISOR],
 // SetRange(-200, 200), WhiteAdv[MG][CANNON], WhiteAdv[EG][CANNON],
 // SetRange(-50, 50), WhiteAdv[MG][PAWN], WhiteAdv[EG][PAWN],
 // SetRange(-200, 200), WhiteAdv[MG][KNIGHT], WhiteAdv[EG][KNIGHT],
 // SetRange(-100, 100), WhiteAdv[MG][BISHOP], WhiteAdv[EG][BISHOP],
-
-postUpdate
-);
+//postUpdate
+//);
 
 
 int main(int argc, char* argv[]) {
